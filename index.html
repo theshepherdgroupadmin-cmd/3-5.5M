@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platinum Reserve | Off-Market Properties</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #000000; color: #ffffff; font-family: 'Montserrat', sans-serif; min-height: 100vh; }
+        .header { text-align: center; padding: 60px 20px 40px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .header h1 { font-size: 42px; font-weight: 300; letter-spacing: 8px; text-transform: uppercase; color: #ffffff; margin-bottom: 12px; }
+        .header .subtitle { font-size: 14px; font-weight: 300; letter-spacing: 4px; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
+        .properties { max-width: 1200px; margin: 0 auto; padding: 50px 20px 80px; display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; }
+        .property-card { width: 520px; background-color: #000000; }
+        .property-card .image-container { width: 100%; height: 320px; overflow: hidden; position: relative; }
+        .property-card .image-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .property-card:hover .image-container img { transform: scale(1.03); }
+        .photo-placeholder { width: 100%; height: 100%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; }
+        .photo-placeholder span { color: #888; font-family: 'Montserrat', sans-serif; font-size: 18px; letter-spacing: 2px; text-transform: uppercase; }
+        .property-card .details { padding: 24px 0; }
+        .property-card .property-title { font-size: 26px; font-weight: 300; letter-spacing: 2px; text-transform: uppercase; color: #ffffff; margin-bottom: 12px; }
+        .property-card .property-address { font-size: 14px; font-weight: 300; color: rgba(255, 255, 255, 0.85); margin-bottom: 6px; }
+        .property-card .property-specs { font-size: 14px; font-weight: 300; color: rgba(255, 255, 255, 0.85); margin-bottom: 6px; }
+        .property-card .property-price { font-size: 14px; font-weight: 700; font-style: italic; color: #ffffff; margin-top: 4px; }
+        .property-card .btn-row { display: flex; align-items: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+        .save-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; border: 1px solid #ffffff; background-color: transparent; color: #ffffff; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 400; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; user-select: none; }
+        .save-btn:hover { background-color: rgba(255, 255, 255, 0.08); }
+        .save-btn.saved { background-color: rgba(255, 255, 255, 0.12); }
+        .save-btn.saved:hover { background-color: rgba(255, 255, 255, 0.18); }
+        .property-card .plans-btn { display: inline-flex; align-items: center; padding: 10px 24px; border: 1px solid rgba(255, 255, 255, 0.4); background-color: transparent; color: rgba(255, 255, 255, 0.8); font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 400; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+        .property-card .plans-btn:hover { background-color: #ffffff; color: #000000; border-color: #ffffff; }
+        .footer { text-align: center; padding: 30px 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        .footer p { font-size: 11px; font-weight: 300; letter-spacing: 2px; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; }
+        .map-section { max-width: 1200px; margin: 0 auto; padding: 0 20px 60px; }
+        .map-title { font-size: 26px; font-weight: 300; letter-spacing: 4px; text-transform: uppercase; color: #ffffff; text-align: center; margin-bottom: 30px; }
+        #map { width: 100%; height: 500px; border: 1px solid rgba(255, 255, 255, 0.15); }
+        .map-popup { font-family: 'Montserrat', sans-serif; font-size: 13px; line-height: 1.5; color: #000; }
+        .map-popup strong { font-size: 14px; display: block; margin-bottom: 4px; }
+        @media (max-width: 600px) {
+            .header h1 { font-size: 28px; letter-spacing: 4px; }
+            .properties { padding: 30px 16px 60px; gap: 30px; }
+            .property-card { width: 100%; }
+            .property-card .image-container { height: 240px; }
+            .property-card .property-title { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <img src="SRCLogo.png" alt="Stonehouse Realty Co." style="width:80px;height:auto;margin-bottom:24px;opacity:0.95;">
+        <h1>Platinum Reserve</h1>
+        <div class="subtitle">Exclusive Off-Market Properties</div>
+    </div>
+
+    <div class="properties">
+
+        <!-- 3013 Medial -->
+        <div class="property-card">
+            <div class="image-container"><img src="3013_Medial.jpg" alt="3013 Medial"></div>
+            <div class="details">
+                <h2 class="property-title">3013 Medial Ave</h2>
+                <p class="property-address">3013 Medial Ave, Nashville, TN</p>
+                <p class="property-specs">6 BD | 7 FB + 2 HB | 6,000+ SF | .5 AC</p>
+                <p class="property-price">$5.5M</p>
+                <div class="btn-row">                </div>
+            </div>
+        </div>
+
+        <!-- 1154 Travelers Ridge -->
+        <div class="property-card">
+            <div class="image-container"><img src="Travelers_Ridge.jpeg" alt="1154 Travelers Ridge"></div>
+            <div class="details">
+                <h2 class="property-title">1154 Travelers Ridge</h2>
+                <p class="property-address">1154 Travelers Ridge, Nashville, TN</p>
+                <p class="property-specs">4 BD | 4 BA | 6,793 SF | Gym</p>
+                <p class="property-price">Price TBD</p>
+                <div class="btn-row">                </div>
+            </div>
+        </div>
+
+        <!-- 2909 Compton Rd -->
+        <div class="property-card">
+            <div class="image-container"><img src="Compton.jpeg" alt="2909 Compton Rd"></div>
+            <div class="details">
+                <h2 class="property-title">2909 Compton Rd</h2>
+                <p class="property-address">2909 Compton Rd, Nashville, TN</p>
+                <p class="property-specs">6 BD | 7 BA | 7,400+ SF | 3 Car Garage | Pool &amp; Spa | 2 Bonus Rooms</p>
+                <p class="property-price">$4M</p>
+                <div class="btn-row">                </div>
+            </div>
+        </div>
+
+        <!-- 915 Kirkwood -->
+        <div class="property-card">
+            <div class="image-container"><div class="photo-placeholder"><span>Photo Coming Soon</span></div></div>
+            <div class="details">
+                <h2 class="property-title">915 Kirkwood Ave</h2>
+                <p class="property-address">915 Kirkwood Ave, Nashville, TN</p>
+                <p class="property-specs">Historical Remodel | 9,000+ SF | .5 AC | 3 Car Garage | Pool | Basement</p>
+                <p class="property-price">$5M &ndash; 6 Months Out</p>
+                <p style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:300;font-style:italic;color:rgba(255,255,255,0.55);margin-top:8px;">Builder: Elliott Homes</p>
+                <div class="btn-row">                </div>
+            </div>
+        </div>
+
+        <!-- 1001 Halcyon -->
+        <div class="property-card">
+            <div class="image-container"><div class="photo-placeholder"><span>Photo Coming Soon</span></div></div>
+            <div class="details">
+                <h2 class="property-title">1001 Halcyon</h2>
+                <p class="property-address">1001 Halcyon, Nashville, TN 37204</p>
+                <p class="property-specs">4 BD | 4 BA | 5,000 SF | .17 AC | DADU</p>
+                <p class="property-price">$3.4M &ndash; June 2026 (3 Months Out)</p>
+                <div class="btn-row">                </div>
+            </div>
+        </div>
+
+        <!-- 940 S Douglas Ave -->
+        <div class="property-card">
+            <div class="image-container"><div class="photo-placeholder"><span>Photo Coming Soon</span></div></div>
+            <div class="details">
+                <h2 class="property-title">940 S Douglas Ave</h2>
+                <p class="property-address">940 S Douglas Ave, Nashville, TN 37204</p>
+                <p class="property-specs">4 BD | 4 BA | 5,000 SF | .25 AC | 3 Car Garage | DADU</p>
+                <p class="property-price">$3.375M &ndash; July 2026 (4 Months Out)</p>
+                <div class="btn-row">                </div>
+            </div>
+        </div>
+
+        <!-- 1117 Halcyon -->
+        <div class="property-card">
+            <div class="image-container"><img src="1117 Halcyon.jpg" alt="1117 Halcyon"></div>
+            <div class="details">
+                <h2 class="property-title">1117 Halcyon</h2>
+                <p class="property-address">1117 Halcyon, Nashville, TN 37204</p>
+                <p class="property-specs">Details Coming Soon</p>
+                <p class="property-price">Price TBD</p>
+                <p style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:300;font-style:italic;color:rgba(255,255,255,0.55);margin-top:8px;">Construction Phase: Poured Foundation</p>
+                <div class="btn-row">                    <a href="BUILDING_PLANS_1117_Halcyon_Ave.pdf" target="_blank" class="plans-btn">Building Plans</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1115 Halcyon -->
+        <div class="property-card">
+            <div class="image-container"><img src="1115 Halcyon.jpg" alt="1115 Halcyon"></div>
+            <div class="details">
+                <h2 class="property-title">1115 Halcyon</h2>
+                <p class="property-address">1115 Halcyon, Nashville, TN 37204</p>
+                <p class="property-specs">Details Coming Soon</p>
+                <p class="property-price">Price TBD</p>
+                <p style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:300;font-style:italic;color:rgba(255,255,255,0.55);margin-top:8px;">Construction Phase: Poured Foundation</p>
+                <div class="btn-row">                    <a href="BUILDING_PLANS_1115_Halcyon_Ave.pdf" target="_blank" class="plans-btn">Building Plans</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3720 Benham Ave -->
+        <div class="property-card">
+            <div class="image-container"><img src="3720ben.png" alt="3720 Benham Ave"></div>
+            <div class="details">
+                <h2 class="property-title">3720 Benham Ave</h2>
+                <p class="property-address">3720 Benham Ave, Nashville, TN</p>
+                <p class="property-specs">5 BD | 6 FB + 1 HB | 6,369 SF | 3 Car Garage | Pool | Gym | Office | Primary on Main</p>
+                <p class="property-price">$4.4M</p>
+                <p style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:300;font-style:italic;color:rgba(255,255,255,0.55);margin-top:8px;">Builder: Elliott Homes</p>
+                <div class="btn-row">                    <a href="BUILDING_PLANS_3720_Benham_Ave.pdf" target="_blank" class="plans-btn">Building Plans</a>
+                    <a href="POOL_PLANS_3720_Benham_Ave.pdf" target="_blank" class="plans-btn">Pool Plans</a>
+                    <a href="PROPERTY_LAYOUT_3720_Benham_Ave.pdf" target="_blank" class="plans-btn">Property Layout</a>
+                    <a href="DESIGN_BOARD_3720_Benham_Ave.pdf" target="_blank" class="plans-btn">Design Board</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3724 Benham Ave -->
+        <div class="property-card">
+            <div class="image-container"><img src="3724 Benham Dr..png" alt="3724 Benham Ave"></div>
+            <div class="details">
+                <h2 class="property-title">3724 Benham Ave</h2>
+                <p class="property-address">3724 Benham Ave, Nashville, TN 37215</p>
+                <p class="property-specs">5 BD | 6 FB + 1 HB | 6,369 SF | 3 Car Garage | Pool | Gym | Office | Primary on Main</p>
+                <p class="property-price">$4.6M</p>
+                <p style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:300;font-style:italic;color:rgba(255,255,255,0.55);margin-top:8px;">Construction Phase: Framing</p>
+                <p style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:300;font-style:italic;color:rgba(255,255,255,0.55);margin-top:4px;">Builder: Elliott Homes</p>
+                <div class="btn-row">                    <a href="BUILDING_PLANS_3724_Benham_Ave.pdf" target="_blank" class="plans-btn">Building Plans</a>
+                    <a href="DESIGN_BOARD_3724_Benham_Ave.pdf" target="_blank" class="plans-btn">Design Board</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 126 Taggart Ave -->
+        <div class="property-card">
+            <div class="image-container"><img src="126_Taggart_Ave.jpg" alt="126 Taggart Ave"></div>
+            <div class="details">
+                <h2 class="property-title">126 Taggart Ave</h2>
+                <p class="property-address">126 Taggart Ave, Nashville, TN 37205</p>
+                <p class="property-specs">5 BD | 5 FB + 2 HB | 5,659 SF | .5 AC | 3 Car Garage</p>
+                <p class="property-price">$4.5M</p>
+                <div class="btn-row">                    <a href="BUILDING_PLANS_126_Taggart_Ave.pdf" target="_blank" class="plans-btn">Building Plans</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 220 Heady Dr -->
+        <div class="property-card">
+            <div class="image-container"><img src="220headydr.jpg" alt="220 Heady Dr"></div>
+            <div class="details">
+                <h2 class="property-title">220 Heady Dr</h2>
+                <p class="property-address">220 Heady Dr, Nashville, TN 37205</p>
+                <p class="property-specs">5 BD | 2 HB | 6,219 SF | .5 AC | 3 Car Garage | Library</p>
+                <p class="property-price">$4.5M</p>
+                <div class="btn-row">                    <a href="BUILDING_PLANS_220_Heady_Dr.pdf" target="_blank" class="plans-btn">Building Plans</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 111 Page Rd -->
+        <div class="property-card">
+            <div class="image-container"><img src="111Page.png" alt="111 Page Rd"></div>
+            <div class="details">
+                <h2 class="property-title">111 Page Rd</h2>
+                <p class="property-address">111 Page Rd, Nashville, TN 37205</p>
+                <p class="property-specs">5 BD | 6 FB + 2 HB | 7,215 SF | 3 Car Garage | Office</p>
+                <p class="property-price">Price TBD</p>
+                <div class="btn-row">                    <a href="BUILDING_PLANS_111_Page_Rd.pdf" target="_blank" class="plans-btn">Building Plans</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1010 Draughon Ave -->
+        <div class="property-card">
+            <div class="image-container"><div class="photo-placeholder"><span>Photo Coming Soon</span></div></div>
+            <div class="details">
+                <h2 class="property-title">1010 Draughon Ave</h2>
+                <p class="property-address">1010 Draughon Ave, Nashville, TN 37204</p>
+                <p class="property-specs">5 BD | 5,200 SF | Pool</p>
+                <p class="property-price">$3.5M &ndash; Finishing Winter 2026</p>
+                <div class="btn-row">                </div>
+            </div>
+        </div>
+
+        <!-- 1109 Montrose -->
+        <div class="property-card">
+            <div class="image-container" style="background:#fff;"><img src="1109Montrose.jpg" alt="1109 Montrose" style="object-fit:contain;background:#fff;"></div>
+            <div class="details">
+                <h2 class="property-title">1109 Montrose</h2>
+                <p class="property-address">1109 Montrose, Nashville, TN</p>
+                <p class="property-specs">Details Coming Soon</p>
+                <p class="property-price">$4M+</p>
+                <div class="btn-row">                    <a href="BUILDING_PLANS_1109_Montrose.pdf" target="_blank" class="plans-btn">Building Plans</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Map Section -->
+    <div class="map-section">
+        <h2 class="map-title">Property Locations</h2>
+        <div id="map"></div>
+    </div>
+
+    <div class="footer">
+        <p>Stonehouse Realty Co. &bull; Confidential &bull; Not for Public Distribution</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+    <script>
+        var map = L.map('map', { scrollWheelZoom: false }).setView([36.1200, -86.8000], 13);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '',
+            maxZoom: 19
+        }).addTo(map);
+
+        var properties = [
+            { lat: 36.1229, lng: -86.8182, title: '3013 Medial Ave', details: '6 BD | 9 BA | $5.5M' },
+            { lat: 36.0800, lng: -86.8200, title: '1154 Travelers Ridge', details: '4 BD | 4 BA | 6,793 SF' },
+            { lat: 36.1308, lng: -86.7940, title: '2909 Compton Rd', details: '6 BD | 7 BA | $4M | Pool' },
+            { lat: 36.1199, lng: -86.7845, title: '915 Kirkwood Ave', details: 'Historical Remodel | Pool' },
+            { lat: 36.1223, lng: -86.7867, title: '1001 Halcyon', details: '4 BD | 4 BA | $3.4M' },
+            { lat: 36.1304, lng: -86.7851, title: '940 S Douglas Ave', details: '4 BD | 4 BA | $3.375M' },
+            { lat: 36.1223, lng: -86.7858, title: '1117 Halcyon', details: 'Details TBD' },
+            { lat: 36.1223, lng: -86.7858, title: '1115 Halcyon', details: 'Details TBD' },
+            { lat: 36.1235, lng: -86.7883, title: '1109 Montrose', details: '$4M+' },
+            { lat: 36.1091, lng: -86.8087, title: '3720 Benham Ave', details: '5 BD | 6,369 SF | $4.4M | Pool' },
+            { lat: 36.1090, lng: -86.8088, title: '3724 Benham Ave', details: '5 BD | 6,369 SF | $4.6M | Framing' },
+            { lat: 36.0944, lng: -86.8734, title: '126 Taggart Ave', details: '5 BD | 7 BA | 5,659 SF | $4.5M' },
+            { lat: 36.0928, lng: -86.8694, title: '220 Heady Dr', details: '5 BD | 6,219 SF | $4.5M | Library' },
+            { lat: 36.0995, lng: -86.8698, title: '111 Page Rd', details: '5 BD | 7,215 SF | 3 Car Garage' },
+            { lat: 36.1100, lng: -86.7887, title: '1010 Draughon Ave', details: '5 BD | 5,200 SF | $3.5M | Pool' }
+        ];
+
+        var whiteIcon = L.divIcon({
+            className: 'custom-pin',
+            html: '<div style="width:14px;height:14px;background:#fff;border:2px solid #fff;border-radius:50%;box-shadow:0 0 8px rgba(255,255,255,0.5);"></div>',
+            iconSize: [14, 14],
+            iconAnchor: [7, 7],
+            popupAnchor: [0, -10]
+        });
+
+        properties.forEach(function(p) {
+            L.marker([p.lat, p.lng], { icon: whiteIcon })
+                .addTo(map)
+                .bindPopup('<div class="map-popup"><strong>' + p.title + '</strong>' + p.details + '</div>');
+        });
+
+        var group = L.featureGroup(properties.map(function(p) {
+            return L.marker([p.lat, p.lng]);
+        }));
+        map.fitBounds(group.getBounds().pad(0.15));
+
+        function toggleSave(btn, propertyName) {
+            btn.classList.toggle('saved');
+            const isSaved = btn.classList.contains('saved');
+            if (isSaved) {
+                btn.innerHTML = 'Info Requested';
+                sendNotification(propertyName);
+            } else {
+                btn.innerHTML = 'Request More Info';
+            }
+        }
+
+        function sendNotification(propertyName) {
+            const data = {
+                property: propertyName,
+                message: 'A prospect requested more information on ' + propertyName + ' from the Platinum Reserve page.',
+                _subject: 'Platinum Reserve: Info Requested on ' + propertyName,
+                _captcha: 'false',
+                _template: 'table'
+            };
+
+            fetch('https://formsubmit.co/ajax/ryan@stonehouserealtyco.com', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        }
+    </script>
+
+</body>
+</html>
